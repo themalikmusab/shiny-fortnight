@@ -146,7 +146,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
                       min="1"
                       max="40"
                       value={cls.periods_per_week}
-                      onChange={(e) => updateClass(cls.id, 'periods_per_week', parseInt(e.target.value))}
+                      onChange={(e) => updateClass(cls.id, 'periods_per_week', parseInt(e.target.value) || 1)}
                       className="input-field"
                     />
                   </div>
@@ -186,7 +186,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
                 min="4"
                 max="12"
                 value={constraints.periods_per_day}
-                onChange={(e) => setConstraints({...constraints, periods_per_day: parseInt(e.target.value)})}
+                onChange={(e) => setConstraints({...constraints, periods_per_day: parseInt(e.target.value) || 8})}
                 className="input-field"
               />
             </div>

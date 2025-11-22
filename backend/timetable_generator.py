@@ -16,6 +16,18 @@ class TimetableGenerator:
         Returns: (schedule, success, message)
         """
         try:
+            # Validate inputs
+            if not self.classes:
+                return [], False, "No classes provided. Please add at least one class."
+
+            for cls in self.classes:
+                if cls.duration <= 0:
+                    return [], False, f"Class '{cls.name}' has invalid duration {cls.duration}. Duration must be at least 1."
+                if cls.duration > self.periods_per_day:
+                    return [], False, f"Class '{cls.name}' duration ({cls.duration}) exceeds periods per day ({self.periods_per_day})."
+                if cls.periods_per_week <= 0:
+                    return [], False, f"Class '{cls.name}' must have at least 1 period per week."
+
             # Calculate total periods needed
             total_periods_needed = sum(c.periods_per_week for c in self.classes)
             total_periods_available = len(self.days) * self.periods_per_day
@@ -65,8 +77,12 @@ class TimetableGenerator:
                     continue
                 available_slots.append((day, period))
 
-        # Shuffle slots for randomization
-        random.shuffle(available_slots)
+        # Apply preferences before shuffling
+        available_slots = self._apply_preferences(available_slots)
+
+        # Shuffle slots for randomization (but preferences are already sorted)
+        if not self.constraints.prefer_morning and not self.constraints.prefer_afternoon:
+            random.shuffle(available_slots)
 
         # Try to assign each class instance
         used_slots = set()
@@ -87,15 +103,23 @@ class TimetableGenerator:
                     if slot in teacher_schedule[cls.teacher]:
                         continue
 
-                # Check duration (if class needs 2 periods)
+                # Check duration (if class needs multiple consecutive periods)
                 if cls.duration > 1:
-                    # Check if next period is available
-                    next_period = period + 1
-                    if next_period > self.periods_per_day:
-                        continue
-                    if (day, next_period) in used_slots:
-                        continue
-                    if self.constraints.lunch_break_period and next_period == self.constraints.lunch_break_period:
+                    # Check if ALL required consecutive periods are available
+                    all_periods_available = True
+                    for extra in range(1, cls.duration):
+                        next_period = period + extra
+                        if next_period > self.periods_per_day:
+                            all_periods_available = False
+                            break
+                        if (day, next_period) in used_slots:
+                            all_periods_available = False
+                            break
+                        if self.constraints.lunch_break_period and next_period == self.constraints.lunch_break_period:
+                            all_periods_available = False
+                            break
+
+                    if not all_periods_available:
                         continue
 
                 # Assign the slot
