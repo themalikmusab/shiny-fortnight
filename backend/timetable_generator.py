@@ -1,7 +1,6 @@
 import random
 from typing import List, Dict, Tuple, Set, Optional
 from models import ClassInput, TimetableConstraints, TimeSlot, Day
-from constraint import Problem, AllDifferentConstraint
 
 
 class TimetableGenerator:

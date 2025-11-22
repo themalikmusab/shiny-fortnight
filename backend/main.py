@@ -4,8 +4,6 @@ from fastapi.responses import FileResponse
 from models import GenerateTimetableRequest, TimetableResponse
 from timetable_generator import TimetableGenerator, validate_timetable
 from pdf_generator import generate_pdf
-import random
-import string
 
 app = FastAPI(title="Timetable Randomizer API")
 

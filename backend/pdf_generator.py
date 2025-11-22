@@ -1,12 +1,11 @@
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from typing import List
 from models import TimeSlot, TimetableConstraints, Day
 import tempfile
-import os
 
 
 def generate_pdf(schedule: List[TimeSlot], constraints: TimetableConstraints) -> str:

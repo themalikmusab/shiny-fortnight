@@ -4,8 +4,8 @@ import axios from 'axios';
 import { ClassInput, TimetableConstraints, Day, TimeSlot } from '../types';
 
 interface ClassFormProps {
-  onSubmit: (classes: ClassInput[]) => void;
-  onScheduleGenerated: (schedule: TimeSlot[]) => void;
+  onSubmit: (classes: ClassInput[], constraints: TimetableConstraints) => void;
+  onScheduleGenerated: (schedule: TimeSlot[], constraints: TimetableConstraints) => void;
   onBack: () => void;
 }
 
@@ -58,7 +58,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
     }
 
     setLoading(true);
-    onSubmit(classes);
+    onSubmit(classes, constraints);
 
     try {
       const response = await axios.post('http://localhost:8000/api/generate', {
@@ -67,7 +67,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
       });
 
       if (response.data.success) {
-        onScheduleGenerated(response.data.schedule);
+        onScheduleGenerated(response.data.schedule, constraints);
       } else {
         setError(response.data.message);
       }
@@ -108,7 +108,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
           <h2 className="text-xl font-semibold mb-4">Your Classes</h2>
 
           <div className="space-y-4">
-            {classes.map((cls, index) => (
+            {classes.map((cls) => (
               <div key={cls.id} className="flex gap-3 items-start p-4 bg-gray-50 rounded-lg">
                 <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>

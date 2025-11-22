@@ -1,18 +1,19 @@
 import { Download, RefreshCw, Home } from 'lucide-react';
-import { TimeSlot, ClassInput, Day } from '../types';
+import { TimeSlot, ClassInput, Day, TimetableConstraints } from '../types';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
 interface TimetableViewProps {
   schedule: TimeSlot[];
   classes: ClassInput[];
+  constraints: TimetableConstraints;
   onRegenerate: () => void;
   onReset: () => void;
 }
 
-export default function TimetableView({ schedule, classes, onRegenerate, onReset }: TimetableViewProps) {
-  const days = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY];
-  const periodsPerDay = 8;
+export default function TimetableView({ schedule, classes, constraints, onRegenerate, onReset }: TimetableViewProps) {
+  const days = constraints.days_per_week;
+  const periodsPerDay = constraints.periods_per_day;
 
   const getSlot = (day: Day, period: number): TimeSlot | undefined => {
     return schedule.find(s => s.day === day && s.period === period);
@@ -128,7 +129,7 @@ export default function TimetableView({ schedule, classes, onRegenerate, onReset
                           </div>
                         </td>
                       );
-                    } else if (period === 4) {
+                    } else if (constraints.lunch_break_period && period === constraints.lunch_break_period) {
                       return (
                         <td
                           key={`${day}-${period}`}
@@ -159,7 +160,7 @@ export default function TimetableView({ schedule, classes, onRegenerate, onReset
         <div className="card mt-6">
           <h3 className="font-semibold text-lg mb-3">Your Classes</h3>
           <div className="flex flex-wrap gap-3">
-            {classes.map((cls, index) => (
+            {classes.map((cls) => (
               <div
                 key={cls.id}
                 className="px-4 py-2 rounded-lg border-2"
