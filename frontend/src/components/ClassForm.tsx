@@ -48,6 +48,7 @@ export default function ClassForm({ onSubmit, onScheduleGenerated, onBack }: Cla
     if (error) {
       setError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [classes, constraints]);
 
   const addClass = () => {
